@@ -1,0 +1,1 @@
+{"question":"<p>3 + 3 = ? (шинэчлэгдсэн)</p>","answers":[{"text":"<div>5</div>","correct":false},{"text":"<div>6</div>","correct":true}],"behaviour":{"singleAnswer":true,"enableRetry":true,"enableSolutionsButton":true,"type":"auto"}}

@@ -1,0 +1,12 @@
+node_modules/
+dist/
+build/
+.env
+.env.local
+*.log
+.DS_Store
+h5p/temporary-storage/
+h5p/content/
+h5p/libraries/
+h5p/core/
+h5p/editor/
