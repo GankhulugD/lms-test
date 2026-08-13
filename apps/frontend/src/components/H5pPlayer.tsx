@@ -1,5 +1,6 @@
 import { H5PPlayerUI } from '@lumieducation/h5p-react';
 import { h5pApi } from '../api/h5p';
+import { useLanguage } from '../context/LanguageContext';
 
 interface Props {
   contentId: string;
@@ -17,10 +18,11 @@ interface Props {
  * (initialized, xAPI statement) барьж авч, сурагчийн явцыг backend-д хадгална.
  */
 export function H5pPlayer({ contentId, trackProgress = false }: Props) {
+  const { language } = useLanguage();
   return (
     <H5PPlayerUI
       contentId={contentId}
-      loadContentCallback={() => h5pApi.playerModel(contentId)}
+      loadContentCallback={() => h5pApi.playerModel(contentId, language)}
       onInitialized={
         trackProgress
           ? () => {

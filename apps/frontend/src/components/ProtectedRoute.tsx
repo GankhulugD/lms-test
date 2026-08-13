@@ -1,14 +1,16 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import type { UserRole } from '../types';
 
 export function ProtectedRoute({ roles }: { roles?: UserRole[] }) {
   const { user, loading } = useAuth();
+  const { t } = useLanguage();
 
   if (loading) {
     return (
       <div className="flex h-screen items-center justify-center text-muted-foreground">
-        Ачааллаж байна...
+        {t('common.loading')}
       </div>
     );
   }

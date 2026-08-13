@@ -18,6 +18,7 @@ import { EnrollmentService } from '../enrollment/enrollment.service';
 import { CurrentUser } from '../../shared/decorators/current-user.decorator';
 import type { CurrentUserPayload } from '../../shared/decorators/current-user.decorator';
 import { Roles } from '../../shared/decorators/roles.decorator';
+import { ErrorCode } from '../../shared/error-codes';
 import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import { RolesGuard } from '../../shared/guards/roles.guard';
 import { UserRole } from '../users/schemas/user.schema';
@@ -138,7 +139,7 @@ export class H5pContentController {
   /** contentId-гоор харгалзах lesson-ийг олж, эзэмшлийг шалгана. */
   private async assertContentOwnership(contentId: string, user: CurrentUserPayload) {
     const lesson = await this.lessonsService.findByH5pContentId(contentId);
-    if (!lesson) throw new NotFoundException('H5P content not found');
+    if (!lesson) throw new NotFoundException(ErrorCode.H5P_CONTENT_NOT_FOUND);
     const course = await this.coursesService.findOne(lesson.courseId.toString());
     this.coursesService.assertOwnership(course, user);
     return { lesson, course };
@@ -147,7 +148,7 @@ export class H5pContentController {
   /** ТОГЛУУЛАХ эрх: admin, эзэмшигч багш, эсвэл course-д элссэн сурагч. */
   private async assertPlayAccess(contentId: string, user: CurrentUserPayload) {
     const lesson = await this.lessonsService.findByH5pContentId(contentId);
-    if (!lesson) throw new NotFoundException('H5P content not found');
+    if (!lesson) throw new NotFoundException(ErrorCode.H5P_CONTENT_NOT_FOUND);
     const course = await this.coursesService.findOne(lesson.courseId.toString());
 
     if (user.role === UserRole.ADMIN || course.teacherId.toString() === user.userId) {
@@ -155,7 +156,7 @@ export class H5pContentController {
     }
     const enrolled = await this.enrollmentService.isEnrolled(course._id.toString(), user.userId);
     if (!enrolled) {
-      throw new ForbiddenException('Та энэ контентыг үзэх эрхгүй байна');
+      throw new ForbiddenException(ErrorCode.H5P_ACCESS_DENIED);
     }
   }
 }

@@ -1,6 +1,7 @@
 import { Check, Eye, Pencil, Trash2, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { h5pApi } from '../api/h5p';
+import { useLanguage } from '../context/LanguageContext';
 import { H5pEditor, type H5pEditorHandle } from './H5pEditor';
 import { H5pPlayer } from './H5pPlayer';
 import { StudentProgressPanel } from './StudentProgressPanel';
@@ -42,6 +43,7 @@ export function H5pContentBlock({
   onSaved,
   onCancelCreate,
 }: Props) {
+  const { t } = useLanguage();
   const isNew = !contentId;
   const [tab, setTab] = useState<'view' | 'edit'>(isNew ? 'edit' : 'view');
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -56,13 +58,13 @@ export function H5pContentBlock({
 
   useEffect(() => {
     if (!justSaved) return;
-    const t = setTimeout(() => setJustSaved(false), 3000);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => setJustSaved(false), 3000);
+    return () => clearTimeout(timer);
   }, [justSaved]);
 
   async function handleDelete() {
     if (!contentId) return;
-    if (!confirm('Энэ H5P контентыг устгах уу?')) return;
+    if (!confirm(t('h5p.deleteConfirm'))) return;
     await h5pApi.remove(contentId);
     onDeleted?.();
   }
@@ -93,13 +95,13 @@ export function H5pContentBlock({
           <div className="flex flex-wrap items-center justify-between gap-2">
             <Tabs value={tab} onValueChange={(v) => setTab(v as 'view' | 'edit')}>
               <TabsList>
-                <TabsTrigger value="view" disabled={isNew} title={isNew ? 'Эхлээд хадгална уу' : undefined}>
+                <TabsTrigger value="view" disabled={isNew} title={isNew ? t('h5p.saveFirst') : undefined}>
                   <Eye />
-                  Харах
+                  {t('h5p.view')}
                 </TabsTrigger>
                 <TabsTrigger value="edit">
                   <Pencil />
-                  Засварлах
+                  {t('h5p.edit')}
                 </TabsTrigger>
               </TabsList>
             </Tabs>
@@ -107,23 +109,23 @@ export function H5pContentBlock({
               {justSaved && (
                 <span className="flex items-center gap-1 text-sm text-emerald-600">
                   <Check className="size-4" />
-                  Хадгалагдлаа
+                  {t('h5p.saved')}
                 </span>
               )}
               {tab === 'edit' && (
                 <Button size="sm" onClick={handleSave} disabled={saving}>
-                  {saving ? 'Хадгалж байна...' : 'Хадгалах'}
+                  {saving ? t('common.saving') : t('common.save')}
                 </Button>
               )}
               {isNew ? (
                 <Button size="sm" variant="outline" onClick={onCancelCreate}>
                   <X />
-                  Цуцлах
+                  {t('common.cancel')}
                 </Button>
               ) : (
                 <Button size="sm" variant="destructive" onClick={handleDelete}>
                   <Trash2 />
-                  Устгах
+                  {t('h5p.delete')}
                 </Button>
               )}
             </div>

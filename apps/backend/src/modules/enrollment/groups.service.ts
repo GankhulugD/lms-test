@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { CoursesService } from '../catalog/courses.service';
 import type { CurrentUserPayload } from '../../shared/decorators/current-user.decorator';
+import { ErrorCode } from '../../shared/error-codes';
 import { UsersService } from '../users/users.service';
 import { AddStudentsDto } from './dto/add-students.dto';
 import { CreateGroupDto } from './dto/create-group.dto';
@@ -31,7 +32,7 @@ export class GroupsService {
 
   private async findOneOrThrow(id: string) {
     const group = await this.groupModel.findById(id).exec();
-    if (!group) throw new NotFoundException('Group not found');
+    if (!group) throw new NotFoundException(ErrorCode.GROUP_NOT_FOUND);
     return group;
   }
 
@@ -42,7 +43,7 @@ export class GroupsService {
 
     const students = await this.usersService.findByEmails(dto.emails);
     if (students.length === 0) {
-      throw new BadRequestException('Заасан email-үүдтэй хэрэглэгч олдсонгүй');
+      throw new BadRequestException(ErrorCode.GROUP_STUDENTS_NOT_FOUND);
     }
 
     for (const student of students) {

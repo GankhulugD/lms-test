@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { CurrentUserPayload } from '../../shared/decorators/current-user.decorator';
+import { ErrorCode } from '../../shared/error-codes';
 import { CoursesService } from './courses.service';
 import { CreateSectionDto } from './dto/create-section.dto';
 import { UpdateSectionDto } from './dto/update-section.dto';
@@ -30,7 +31,7 @@ export class SectionsService {
 
   private async findOneOrThrow(id: string) {
     const section = await this.sectionModel.findById(id).exec();
-    if (!section) throw new NotFoundException('Section not found');
+    if (!section) throw new NotFoundException(ErrorCode.SECTION_NOT_FOUND);
     return section;
   }
 

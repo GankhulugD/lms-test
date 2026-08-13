@@ -6,9 +6,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 
 export function LoginPage() {
   const { login } = useAuth();
+  const { t, tError } = useLanguage();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,8 +24,8 @@ export function LoginPage() {
     try {
       await login(email, password);
       navigate('/');
-    } catch {
-      setError('И-мэйл эсвэл нууц үг буруу байна');
+    } catch (err) {
+      setError(tError(err, 'login.error'));
     } finally {
       setSubmitting(false);
     }
@@ -34,13 +36,13 @@ export function LoginPage() {
       <Card className="w-full max-w-sm">
         <CardHeader className="items-center text-center">
           <GraduationCap className="mb-2 size-8 text-primary" />
-          <CardTitle className="text-xl">Нэвтрэх</CardTitle>
-          <CardDescription>LMS системд тавтай морил</CardDescription>
+          <CardTitle className="text-xl">{t('login.title')}</CardTitle>
+          <CardDescription>{t('login.subtitle')}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="email">И-мэйл</Label>
+              <Label htmlFor="email">{t('login.email')}</Label>
               <Input
                 id="email"
                 type="email"
@@ -51,7 +53,7 @@ export function LoginPage() {
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="password">Нууц үг</Label>
+              <Label htmlFor="password">{t('login.password')}</Label>
               <Input
                 id="password"
                 type="password"
@@ -62,13 +64,13 @@ export function LoginPage() {
             </div>
             {error && <p className="text-sm text-destructive">{error}</p>}
             <Button type="submit" disabled={submitting} className="mt-1">
-              {submitting ? 'Түр хүлээнэ үү...' : 'Нэвтрэх'}
+              {submitting ? t('login.submitting') : t('login.submit')}
             </Button>
           </form>
           <p className="mt-4 text-center text-sm text-muted-foreground">
-            Бүртгэлгүй юу?{' '}
+            {t('login.noAccount')}{' '}
             <Link to="/register" className="font-medium text-primary hover:underline">
-              Бүртгүүлэх
+              {t('login.registerLink')}
             </Link>
           </p>
         </CardContent>

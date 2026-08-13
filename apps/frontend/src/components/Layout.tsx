@@ -1,6 +1,7 @@
-import { GraduationCap, LogOut, Moon, Sun } from 'lucide-react';
+import { GraduationCap, Languages, LogOut, Moon, Sun } from 'lucide-react';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
 import { UserRole } from '../types';
 import { Avatar, AvatarFallback } from './ui/avatar';
@@ -15,16 +16,17 @@ import {
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 
-const roleLabels: Record<UserRole, string> = {
-  [UserRole.ADMIN]: 'Админ',
-  [UserRole.TEACHER]: 'Багш',
-  [UserRole.STUDENT]: 'Сурагч',
-};
-
 export function Layout() {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { language, toggleLanguage, t } = useLanguage();
   const navigate = useNavigate();
+
+  const roleLabels: Record<UserRole, string> = {
+    [UserRole.ADMIN]: t('roles.admin'),
+    [UserRole.TEACHER]: t('roles.teacher'),
+    [UserRole.STUDENT]: t('roles.student'),
+  };
 
   function handleLogout() {
     logout();
@@ -44,9 +46,19 @@ export function Layout() {
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
+              size="sm"
+              onClick={toggleLanguage}
+              aria-label={t('layout.language')}
+              className="gap-1.5"
+            >
+              <Languages className="size-4" />
+              {language === 'mn' ? 'MN' : 'EN'}
+            </Button>
+            <Button
+              variant="ghost"
               size="icon"
               onClick={toggleTheme}
-              aria-label={theme === 'dark' ? 'Цайвар горим' : 'Шөнийн горим'}
+              aria-label={theme === 'dark' ? t('layout.lightMode') : t('layout.darkMode')}
             >
               {theme === 'dark' ? <Sun /> : <Moon />}
             </Button>
@@ -68,7 +80,7 @@ export function Layout() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onSelect={handleLogout} variant="destructive">
                     <LogOut />
-                    Гарах
+                    {t('layout.logout')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

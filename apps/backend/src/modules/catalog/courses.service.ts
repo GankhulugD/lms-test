@@ -2,6 +2,7 @@ import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/commo
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { CurrentUserPayload } from '../../shared/decorators/current-user.decorator';
+import { ErrorCode } from '../../shared/error-codes';
 import { UserRole } from '../users/schemas/user.schema';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
@@ -38,7 +39,7 @@ export class CoursesService {
 
   async findOne(id: string) {
     const course = await this.courseModel.findById(id).exec();
-    if (!course) throw new NotFoundException('Course not found');
+    if (!course) throw new NotFoundException(ErrorCode.COURSE_NOT_FOUND);
     return course;
   }
 
@@ -88,7 +89,7 @@ export class CoursesService {
     const isOwner = course.teacherId.toString() === user.userId;
     const isAdmin = user.role === UserRole.ADMIN;
     if (!isOwner && !isAdmin) {
-      throw new ForbiddenException('You do not have access to this course');
+      throw new ForbiddenException(ErrorCode.COURSE_ACCESS_DENIED);
     }
   }
 }

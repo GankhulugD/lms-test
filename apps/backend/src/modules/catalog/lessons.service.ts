@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { CurrentUserPayload } from '../../shared/decorators/current-user.decorator';
+import { ErrorCode } from '../../shared/error-codes';
 import { CoursesService } from './courses.service';
 import { CreateLessonDto } from './dto/create-lesson.dto';
 import { UpdateLessonDto } from './dto/update-lesson.dto';
@@ -18,7 +19,7 @@ export class LessonsService {
 
   private async findSectionOrThrow(sectionId: string) {
     const section = await this.sectionModel.findById(sectionId).exec();
-    if (!section) throw new NotFoundException('Section not found');
+    if (!section) throw new NotFoundException(ErrorCode.SECTION_NOT_FOUND);
     return section;
   }
 
@@ -47,7 +48,7 @@ export class LessonsService {
 
   private async findOneOrThrow(id: string) {
     const lesson = await this.lessonModel.findById(id).exec();
-    if (!lesson) throw new NotFoundException('Lesson not found');
+    if (!lesson) throw new NotFoundException(ErrorCode.LESSON_NOT_FOUND);
     return lesson;
   }
 

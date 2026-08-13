@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { CoursesService } from '../catalog/courses.service';
 import type { CurrentUserPayload } from '../../shared/decorators/current-user.decorator';
+import { ErrorCode } from '../../shared/error-codes';
 import { Enrollment, EnrollmentDocument } from './schemas/enrollment.schema';
 
 @Injectable()
@@ -15,7 +16,7 @@ export class EnrollmentService {
   async enrollSelf(courseId: string, user: CurrentUserPayload) {
     const course = await this.coursesService.findOne(courseId);
     if (!course.published) {
-      throw new ConflictException('Энэ course нийтлэгдээгүй байна');
+      throw new ConflictException(ErrorCode.COURSE_NOT_PUBLISHED);
     }
 
     try {
@@ -25,7 +26,7 @@ export class EnrollmentService {
       });
     } catch (err: any) {
       if (err?.code === 11000) {
-        throw new ConflictException('Та энэ course-д аль хэдийн элссэн байна');
+        throw new ConflictException(ErrorCode.COURSE_ALREADY_ENROLLED);
       }
       throw err;
     }

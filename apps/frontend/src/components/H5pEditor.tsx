@@ -1,6 +1,7 @@
 import { forwardRef, useImperativeHandle, useRef } from 'react';
 import { H5PEditorUI } from '@lumieducation/h5p-react';
 import { h5pApi } from '../api/h5p';
+import { useLanguage } from '../context/LanguageContext';
 
 interface Props {
   lessonId: string;
@@ -27,6 +28,7 @@ export const H5pEditor = forwardRef<H5pEditorHandle, Props>(function H5pEditor(
   ref,
 ) {
   const editorRef = useRef<any>(null);
+  const { language } = useLanguage();
 
   useImperativeHandle(ref, () => ({
     save: async () => {
@@ -40,9 +42,9 @@ export const H5pEditor = forwardRef<H5pEditorHandle, Props>(function H5pEditor(
       contentId={contentId ?? 'new'}
       loadContentCallback={async (id) => {
         if (!id) {
-          return h5pApi.newEditorModel(lessonId);
+          return h5pApi.newEditorModel(lessonId, language);
         }
-        const data = await h5pApi.editorModel(id);
+        const data = await h5pApi.editorModel(id, language);
         return {
           integration: data.integration,
           scripts: data.scripts,

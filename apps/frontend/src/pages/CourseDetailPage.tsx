@@ -10,11 +10,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Input } from '../components/ui/input';
 import { Separator } from '../components/ui/separator';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import { UserRole, type Course, type Enrollment, type Group, type Lesson, type Section } from '../types';
 
 export function CourseDetailPage() {
   const { courseId } = useParams<{ courseId: string }>();
   const { user } = useAuth();
+  const { t } = useLanguage();
   const isTeacher = user?.role === UserRole.TEACHER || user?.role === UserRole.ADMIN;
 
   const [course, setCourse] = useState<Course | null>(null);
@@ -142,7 +144,7 @@ export function CourseDetailPage() {
     await reloadAll();
   }
 
-  if (loading || !course) return <p className="text-sm text-muted-foreground">Ачааллаж байна...</p>;
+  if (loading || !course) return <p className="text-sm text-muted-foreground">{t('common.loading')}</p>;
 
   return (
     <div className="flex flex-col gap-8">
@@ -152,16 +154,16 @@ export function CourseDetailPage() {
           <div className="flex items-center gap-2">
             {isTeacher && (
               <Button variant={course.published ? 'outline' : 'default'} onClick={handlePublishToggle}>
-                {course.published ? 'Нийтлэлтийг цуцлах' : 'Нийтлэх'}
+                {course.published ? t('courseDetail.unpublish') : t('courseDetail.publish')}
               </Button>
             )}
             {user?.role === UserRole.STUDENT && !isEnrolled && course.published && (
-              <Button onClick={handleEnroll}>Элсэх</Button>
+              <Button onClick={handleEnroll}>{t('courseDetail.enroll')}</Button>
             )}
             {user?.role === UserRole.STUDENT && isEnrolled && (
               <Badge variant="default" className="gap-1">
                 <CheckCircle2 className="size-3" />
-                Элссэн
+                {t('courseDetail.enrolled')}
               </Badge>
             )}
           </div>
@@ -170,7 +172,7 @@ export function CourseDetailPage() {
       </div>
 
       <section>
-        <h2 className="mb-3 text-lg font-semibold text-foreground">Сэдэв, хичээлүүд</h2>
+        <h2 className="mb-3 text-lg font-semibold text-foreground">{t('courseDetail.sectionsTitle')}</h2>
         <div className="flex flex-col gap-4">
           {sections.map((section) => (
             <Card key={section._id}>
@@ -193,7 +195,8 @@ export function CourseDetailPage() {
                           {isTeacher && lessonCompletion[lesson._id] && lessonCompletion[lesson._id].total > 0 && (
                             <Badge variant="outline" className="gap-1">
                               <CheckCircle2 className="size-3" />
-                              {lessonCompletion[lesson._id].completed}/{lessonCompletion[lesson._id].total} дуусгасан
+                              {lessonCompletion[lesson._id].completed}/{lessonCompletion[lesson._id].total}{' '}
+                              {t('courseDetail.completedSuffix')}
                             </Badge>
                           )}
                           <Badge variant="secondary">{lesson.h5pContentIds.length} H5P</Badge>
@@ -202,7 +205,7 @@ export function CourseDetailPage() {
                     </li>
                   ))}
                   {(lessonsBySection[section._id] || []).length === 0 && (
-                    <li className="px-3 py-2 text-sm text-muted-foreground">Хичээл алга</li>
+                    <li className="px-3 py-2 text-sm text-muted-foreground">{t('courseDetail.noLessons')}</li>
                   )}
                 </ul>
                 {isTeacher && (
@@ -210,7 +213,7 @@ export function CourseDetailPage() {
                     <Separator />
                     <form onSubmit={(e) => handleAddLesson(section._id, e)} className="flex gap-2">
                       <Input
-                        placeholder="Шинэ хичээлийн нэр"
+                        placeholder={t('courseDetail.newLessonPlaceholder')}
                         value={newLessonTitle[section._id] || ''}
                         onChange={(e) =>
                           setNewLessonTitle((prev) => ({ ...prev, [section._id]: e.target.value }))
@@ -218,7 +221,7 @@ export function CourseDetailPage() {
                       />
                       <Button type="submit" variant="secondary">
                         <Plus />
-                        Хичээл
+                        {t('courseDetail.addLesson')}
                       </Button>
                     </form>
                   </>
@@ -231,14 +234,14 @@ export function CourseDetailPage() {
         {isTeacher && (
           <form onSubmit={handleAddSection} className="mt-4 flex gap-2">
             <Input
-              placeholder="Шинэ сэдвийн нэр"
+              placeholder={t('courseDetail.newSectionPlaceholder')}
               value={newSectionTitle}
               onChange={(e) => setNewSectionTitle(e.target.value)}
               required
             />
             <Button type="submit">
               <Plus />
-              Сэдэв
+              {t('courseDetail.addSection')}
             </Button>
           </form>
         )}
@@ -248,7 +251,7 @@ export function CourseDetailPage() {
         <section>
           <h2 className="mb-3 flex items-center gap-2 text-lg font-semibold text-foreground">
             <Users className="size-4" />
-            Бүлгүүд
+            {t('courseDetail.groupsTitle')}
           </h2>
           <div className="flex flex-col gap-4">
             {groups.map((group) => (
@@ -256,20 +259,22 @@ export function CourseDetailPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-base">
                     {group.name}
-                    <Badge variant="secondary">{group.studentIds.length} сурагч</Badge>
+                    <Badge variant="secondary">
+                      {group.studentIds.length} {t('courseDetail.studentsCountSuffix')}
+                    </Badge>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={(e) => handleAddStudents(group._id, e)} className="flex gap-2">
                     <Input
-                      placeholder="email1@test.com, email2@test.com"
+                      placeholder={t('courseDetail.addStudentsPlaceholder')}
                       value={addEmailsByGroup[group._id] || ''}
                       onChange={(e) =>
                         setAddEmailsByGroup((prev) => ({ ...prev, [group._id]: e.target.value }))
                       }
                     />
                     <Button type="submit" variant="secondary">
-                      Нэмэх
+                      {t('common.add')}
                     </Button>
                   </form>
                 </CardContent>
@@ -278,20 +283,22 @@ export function CourseDetailPage() {
           </div>
           <form onSubmit={handleCreateGroup} className="mt-4 flex gap-2">
             <Input
-              placeholder="Шинэ бүлгийн нэр (жиш: 8а-1)"
+              placeholder={t('courseDetail.newGroupPlaceholder')}
               value={newGroupName}
               onChange={(e) => setNewGroupName(e.target.value)}
               required
             />
             <Button type="submit">
               <Plus />
-              Бүлэг
+              {t('courseDetail.addGroup')}
             </Button>
           </form>
 
           <Card className="mt-6">
             <CardHeader>
-              <CardTitle className="text-base">Бүх бүртгэлтэй сурагчид ({roster.length})</CardTitle>
+              <CardTitle className="text-base">
+                {t('courseDetail.rosterTitle')} ({roster.length})
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="flex flex-col gap-1 text-sm">
@@ -304,7 +311,7 @@ export function CourseDetailPage() {
                   );
                 })}
                 {roster.length === 0 && (
-                  <li className="px-3 py-1.5 text-muted-foreground">Одоогоор бүртгэлтэй сурагч алга</li>
+                  <li className="px-3 py-1.5 text-muted-foreground">{t('courseDetail.noRoster')}</li>
                 )}
               </ul>
             </CardContent>

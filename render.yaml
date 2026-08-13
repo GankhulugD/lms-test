@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: lms-backend
+    runtime: node
+    plan: free
+    region: singapore
+    rootDir: .
+    # --include=dev шаардлагатай: @nestjs/cli зэрэг build хийхэд хэрэгтэй
+    # багцууд devDependencies-д байгаа тул Render NODE_ENV=production үед
+    # тэдгээрийг алгасахаас урьдчилан сэргийлнэ.
+    buildCommand: npm install --include=dev && npm run build --workspace=apps/backend
+    startCommand: npm run start:prod --workspace=apps/backend
+    healthCheckPath: /api/v1
+    buildFilter:
+      paths:
+        - apps/backend/**
+        - package.json
+        - package-lock.json
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 15m
+      - key: CORS_ORIGIN
+        sync: false

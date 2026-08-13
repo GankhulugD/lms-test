@@ -5,8 +5,16 @@ build/
 .env.local
 *.log
 .DS_Store
+
+# H5P-ийн бодит хэрэглэгчийн ӨГӨГДӨЛ (курсын контент, түр файл) — эдгээрийг
+# hosting дээрх persistent disk дээр байлгах ёстой, git-д хийхгүй.
 h5p/temporary-storage/
 h5p/content/
-h5p/libraries/
-h5p/core/
-h5p/editor/
+h5p/config.json
+
+# АНХААР: h5p/core, h5p/editor, h5p/libraries-ийг ЗОРИУДААР git-д ХИЙНЭ
+# (ердийн .gitignore биш) — эдгээр нь H5P клиентийн статик vendor файлууд
+# (H5P.com/h5p-server-ээс татагдсан), deploy хийхэд заавал байх ёстой, гэвч
+# ховор өөрчлөгддөг тул хэрэглэгчийн өгөгдөлтэй адилгүй. Cloudflare Pages/
+# Render дээр эдгээрийг дахин татах persistent disk байхгүй тул commit хийхгүй
+# бол production дээр H5P editor/player огт ажиллахгүй.

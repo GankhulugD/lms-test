@@ -3,6 +3,7 @@ import { BrowserRouter } from 'react-router-dom';
 import './index.css';
 import App from './App.tsx';
 import { AuthProvider } from './context/AuthContext';
+import { LanguageProvider } from './context/LanguageContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
@@ -14,12 +15,14 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 // нөлөөгүй тул StrictMode-ийг эндээс хассан нь зохистой шийдэл.
 createRoot(document.getElementById('root')!).render(
   <ErrorBoundary>
-    <ThemeProvider>
-      <BrowserRouter>
-        <AuthProvider>
-          <App />
-        </AuthProvider>
-      </BrowserRouter>
-    </ThemeProvider>
+    <LanguageProvider>
+      <ThemeProvider>
+        <BrowserRouter>
+          <AuthProvider>
+            <App />
+          </AuthProvider>
+        </BrowserRouter>
+      </ThemeProvider>
+    </LanguageProvider>
   </ErrorBoundary>,
 );

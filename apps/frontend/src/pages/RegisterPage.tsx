@@ -7,10 +7,12 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import { UserRole } from '../types';
 
 export function RegisterPage() {
   const { register } = useAuth();
+  const { t, tError } = useLanguage();
   const navigate = useNavigate();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -26,8 +28,8 @@ export function RegisterPage() {
     try {
       await register(email, password, name, role);
       navigate('/');
-    } catch (err: any) {
-      setError(err?.response?.data?.message ?? 'Бүртгэл амжилтгүй боллоо');
+    } catch (err) {
+      setError(tError(err, 'register.error'));
     } finally {
       setSubmitting(false);
     }
@@ -38,17 +40,17 @@ export function RegisterPage() {
       <Card className="w-full max-w-sm">
         <CardHeader className="items-center text-center">
           <GraduationCap className="mb-2 size-8 text-primary" />
-          <CardTitle className="text-xl">Бүртгүүлэх</CardTitle>
-          <CardDescription>Шинэ хаяг үүсгэх</CardDescription>
+          <CardTitle className="text-xl">{t('register.title')}</CardTitle>
+          <CardDescription>{t('register.subtitle')}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="name">Нэр</Label>
+              <Label htmlFor="name">{t('register.name')}</Label>
               <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required />
             </div>
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="email">И-мэйл</Label>
+              <Label htmlFor="email">{t('register.email')}</Label>
               <Input
                 id="email"
                 type="email"
@@ -59,7 +61,7 @@ export function RegisterPage() {
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="password">Нууц үг (8+ тэмдэгт)</Label>
+              <Label htmlFor="password">{t('register.password')}</Label>
               <Input
                 id="password"
                 type="password"
@@ -70,26 +72,26 @@ export function RegisterPage() {
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <Label>Төрөл</Label>
+              <Label>{t('register.role')}</Label>
               <Select value={role} onValueChange={(v) => setRole(v as UserRole)}>
                 <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={UserRole.STUDENT}>Сурагч</SelectItem>
-                  <SelectItem value={UserRole.TEACHER}>Багш</SelectItem>
+                  <SelectItem value={UserRole.STUDENT}>{t('roles.student')}</SelectItem>
+                  <SelectItem value={UserRole.TEACHER}>{t('roles.teacher')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             {error && <p className="text-sm text-destructive">{error}</p>}
             <Button type="submit" disabled={submitting} className="mt-1">
-              {submitting ? 'Түр хүлээнэ үү...' : 'Бүртгүүлэх'}
+              {submitting ? t('register.submitting') : t('register.submit')}
             </Button>
           </form>
           <p className="mt-4 text-center text-sm text-muted-foreground">
-            Бүртгэлтэй юу?{' '}
+            {t('register.haveAccount')}{' '}
             <Link to="/login" className="font-medium text-primary hover:underline">
-              Нэвтрэх
+              {t('register.loginLink')}
             </Link>
           </p>
         </CardContent>

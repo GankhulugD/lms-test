@@ -5,6 +5,7 @@ import { CoursesService } from '../catalog/courses.service';
 import { LessonsService } from '../catalog/lessons.service';
 import { EnrollmentService } from '../enrollment/enrollment.service';
 import type { CurrentUserPayload } from '../../shared/decorators/current-user.decorator';
+import { ErrorCode } from '../../shared/error-codes';
 import { ReportResultDto } from './dto/report-result.dto';
 import { ContentResult, ContentResultDocument } from './schemas/content-result.schema';
 
@@ -40,7 +41,7 @@ export class ProgressService {
   /** contentId-гоор эзэмшигч lesson/course-ийг олж, {lessonId, courseId} буцаана. */
   private async resolveContentOwner(contentId: string) {
     const lesson = await this.lessonsService.findByH5pContentId(contentId);
-    if (!lesson) throw new NotFoundException('H5P content not found');
+    if (!lesson) throw new NotFoundException(ErrorCode.H5P_CONTENT_NOT_FOUND);
     return { lessonId: lesson._id, courseId: lesson.courseId };
   }
 

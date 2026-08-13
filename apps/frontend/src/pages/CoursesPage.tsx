@@ -9,10 +9,12 @@ import { Input } from '../components/ui/input';
 import { Skeleton } from '../components/ui/skeleton';
 import { Textarea } from '../components/ui/textarea';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import { UserRole, type Course } from '../types';
 
 export function CoursesPage() {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
@@ -39,11 +41,11 @@ export function CoursesPage() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-foreground">Хичээлүүд</h1>
+        <h1 className="text-2xl font-semibold text-foreground">{t('courses.title')}</h1>
         {user?.role === UserRole.TEACHER && (
           <Button onClick={() => setShowCreate((v) => !v)}>
             <Plus />
-            Шинэ хичээл
+            {t('courses.newCourse')}
           </Button>
         )}
       </div>
@@ -53,18 +55,18 @@ export function CoursesPage() {
           <CardContent>
             <form onSubmit={handleCreate} className="flex flex-col gap-3">
               <Input
-                placeholder="Гарчиг"
+                placeholder={t('courses.titlePlaceholder')}
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
               />
               <Textarea
-                placeholder="Тайлбар"
+                placeholder={t('courses.descriptionPlaceholder')}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
               <Button type="submit" className="self-start">
-                Үүсгэх
+                {t('common.create')}
               </Button>
             </form>
           </CardContent>
@@ -89,20 +91,20 @@ export function CoursesPage() {
                       {course.title}
                     </CardTitle>
                     <Badge variant={course.published ? 'default' : 'secondary'}>
-                      {course.published ? 'Нийтэлсэн' : 'Ноорог'}
+                      {course.published ? t('courses.published') : t('courses.draft')}
                     </Badge>
                   </div>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">
-                    {course.description || 'Тайлбар байхгүй'}
+                    {course.description || t('courses.noDescription')}
                   </p>
                 </CardContent>
               </Card>
             </Link>
           ))}
           {courses.length === 0 && (
-            <p className="text-sm text-muted-foreground">Хичээл олдсонгүй.</p>
+            <p className="text-sm text-muted-foreground">{t('courses.notFound')}</p>
           )}
         </div>
       )}

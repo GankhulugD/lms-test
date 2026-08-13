@@ -6,11 +6,13 @@ import { progressApi } from '../api/progress';
 import { H5pContentBlock } from '../components/H5pContentBlock';
 import { Button } from '../components/ui/button';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import { UserRole, type Lesson, type LessonProgress } from '../types';
 
 export function LessonPage() {
   const { lessonId } = useParams<{ lessonId: string }>();
   const { user } = useAuth();
+  const { t } = useLanguage();
   const isTeacher = user?.role === UserRole.TEACHER || user?.role === UserRole.ADMIN;
 
   const [lesson, setLesson] = useState<Lesson | null>(null);
@@ -63,7 +65,7 @@ export function LessonPage() {
     await reloadProgress();
   }
 
-  if (loading || !lesson) return <p className="text-sm text-muted-foreground">Ачааллаж байна...</p>;
+  if (loading || !lesson) return <p className="text-sm text-muted-foreground">{t('common.loading')}</p>;
 
   return (
     <div className="flex flex-col gap-6">
@@ -73,7 +75,7 @@ export function LessonPage() {
           className="mb-2 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="size-3.5" />
-          Курс руу буцах
+          {t('lesson.back')}
         </Link>
         <div className="flex items-center justify-between gap-3">
           <h1 className="text-2xl font-semibold text-foreground">{lesson.title}</h1>
@@ -81,13 +83,13 @@ export function LessonPage() {
             {isTeacher && (
               <Button variant="outline" size="sm" onClick={reloadProgress} disabled={progressLoading}>
                 <RefreshCw className={progressLoading ? 'animate-spin' : ''} />
-                Явц шинэчлэх
+                {t('lesson.refreshProgress')}
               </Button>
             )}
             {isTeacher && !creating && (
               <Button onClick={() => setCreating(true)}>
                 <Plus />
-                Контент нэмэх
+                {t('lesson.addContent')}
               </Button>
             )}
           </div>
@@ -104,7 +106,7 @@ export function LessonPage() {
       )}
 
       {!creating && lesson.h5pContentIds.length === 0 && (
-        <p className="text-sm text-muted-foreground">Энэ хичээлд одоогоор H5P контент байхгүй.</p>
+        <p className="text-sm text-muted-foreground">{t('lesson.noContent')}</p>
       )}
 
       <div className="flex flex-col gap-6">
