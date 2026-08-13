@@ -21,7 +21,17 @@ export class H5pService implements OnModuleInit {
     // main.ts-ийн app.setGlobalPrefix('api/v1')-тэй нийцүүлнэ: H5P клиентийн JS
     // код нь config.baseUrl-ийг ашиглаж бүх дараагийн (ajax/core/libraries/...)
     // URL-ийг угсардаг тул энэ утга бидний бодит route-той таарах ёстой.
-    config.baseUrl = '/api/v1/h5p';
+    //
+    // АНХААР: Local dev-д frontend/backend Vite proxy-гоор НЭГ л origin шиг
+    // ажилладаг тул харьцангуй зам ('/api/v1/h5p') хангалттай байсан. Гэвч
+    // production-д frontend (Cloudflare Workers) болон backend (Render) ӨӨР
+    // domain дээр байрладаг тул харьцангуй зам frontend-ийн өөрийнх нь
+    // domain-аас H5P script/style/ajax файлуудыг хайж, олдохгүй байх
+    // асуудал үүсгэдэг. RENDER_EXTERNAL_URL (Render-ийн автоматаар өгдөг
+    // backend-ийн бодит public URL) байгаа бол бүтэн URL ашиглана, эсрэг
+    // тохиолдолд (local dev) харьцангуй зам хэвээр үлдэнэ.
+    const publicUrl = process.env.RENDER_EXTERNAL_URL || process.env.PUBLIC_BACKEND_URL;
+    config.baseUrl = publicUrl ? `${publicUrl}/api/v1/h5p` : '/api/v1/h5p';
 
     // LMS-ийн энгийн placeholder орчуулга — зөвхөн алдааны key-г л буцаадаг,
     // харин функциональ байдалд нөлөөлөхгүй. Хэрэглэгчид ойлгомжтой
