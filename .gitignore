@@ -18,3 +18,14 @@ h5p/config.json
 # ховор өөрчлөгддөг тул хэрэглэгчийн өгөгдөлтэй адилгүй. Cloudflare Pages/
 # Render дээр эдгээрийг дахин татах persistent disk байхгүй тул commit хийхгүй
 # бол production дээр H5P editor/player огт ажиллахгүй.
+#
+# Дээрх "dist/" болон "build/" дүрэм нь ЭНЭ H5P library-уудын дотоод
+# "dist"/"build" фолдер (тэдгээрийн угсарсан бодит .js/.css файлууд
+# байрладаг!) -ийг ч мөн санамсаргүй хассан байсан тул тэдгээрийг доор
+# тусад нь буцаан оруулна — эс тэгвэл library-ийн зөвхөн metadata
+# (library.json, semantics.json) л commit хийгдэж, жинхэнэ JS/CSS нь
+# production-д огт байхгүй болж, H5P контент "Loading..." дээр зогсдог.
+!apps/backend/h5p/**/dist/
+!apps/backend/h5p/**/dist/**
+!apps/backend/h5p/**/build/
+!apps/backend/h5p/**/build/**
