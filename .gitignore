@@ -10,6 +10,7 @@ build/
 # hosting дээрх persistent disk дээр байлгах ёстой, git-д хийхгүй.
 h5p/temporary-storage/
 h5p/content/
+h5p/content-user-data/
 h5p/config.json
 
 # АНХААР: h5p/core, h5p/editor, h5p/libraries-ийг ЗОРИУДААР git-д ХИЙНЭ

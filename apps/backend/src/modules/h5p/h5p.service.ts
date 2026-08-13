@@ -10,6 +10,7 @@ export class H5pService implements OnModuleInit {
   h5pEditor!: H5P.H5PEditor;
   h5pPlayer!: H5P.H5PPlayer;
   ajaxEndpoint!: H5P.H5PAjaxEndpoint;
+  contentUserDataManager!: H5P.ContentUserDataManager;
 
   async onModuleInit() {
     const h5pRoot = path.join(process.cwd(), 'h5p');
@@ -39,12 +40,22 @@ export class H5pService implements OnModuleInit {
     // руу шилжинэ.
     const translationCallback: H5P.ITranslationFunction = (key) => key;
 
+    // Сурагчийн явцын төлөв (жиш нь: видеоны түр зогсоосон байрлал, эсвэл
+    // "continue where you left off") хадгалах сан. Үүнийг оруулаагүй бол
+    // H5P клиент JS нь GET /h5p/contentUserData/... руу дуудлага хийхэд
+    // манай сервер route-гүй тул 404 буцааж, энэ нь Interactive Video зэрэг
+    // content type-уудыг эхлэлээс нь бүрэн эвдэж, "Loading, please wait..."
+    // дээр мөнхөд зогсооход хүргэдэг.
+    const contentUserDataStorage = new H5P.fsImplementations.FileContentUserDataStorage(
+      path.join(h5pRoot, 'content-user-data'),
+    );
+
     this.h5pEditor = H5P.fs(
       config,
       path.join(h5pRoot, 'libraries'),
       path.join(h5pRoot, 'temporary-storage'),
       path.join(h5pRoot, 'content'),
-      undefined,
+      contentUserDataStorage,
       undefined,
       translationCallback,
     );
@@ -59,10 +70,15 @@ export class H5pService implements OnModuleInit {
       undefined,
       undefined,
       translationCallback,
+      undefined,
+      contentUserDataStorage,
     );
     this.h5pPlayer.setRenderer((model) => model);
 
     this.ajaxEndpoint = new H5P.H5PAjaxEndpoint(this.h5pEditor);
+    // H5PPlayer-ийн адил property нь private тул H5PEditor-ийнхийг ашиглана
+    // (хоёулаа ижил contentUserDataStorage-ийг хуваалцдаг тул зан төлөв ижил).
+    this.contentUserDataManager = this.h5pEditor.contentUserDataManager;
 
     this.logger.log('H5P editor/player бэлэн боллоо');
   }

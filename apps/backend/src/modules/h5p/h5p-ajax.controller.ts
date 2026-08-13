@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Param,
   Query,
   Req,
   Res,
@@ -11,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { ApiExcludeController } from '@nestjs/swagger';
+import * as H5P from '@lumieducation/h5p-server';
 import type { Request, Response } from 'express';
 import type { Readable } from 'stream';
 import { H5pService } from './h5p.service';
@@ -130,6 +132,51 @@ export class H5pAjaxController {
   async getContentParameters(@Req() req: Request) {
     const user = new H5pUser(req.user as any);
     return this.h5p.ajaxEndpoint.getContentParameters(req.params.contentId as string, user);
+  }
+
+  /**
+   * Сурагчийн явцын төлөв (жиш нь: interactive video-н түр зогсоосон
+   * байрлал) хадгалах/уншиx — H5P core клиент JS (h5p.js) contentUserData
+   * URL руу автоматаар GET/POST дуудлага хийдэг тул route заавал байх
+   * ёстой, эс тэгвэл 404-ийн улмаас клиент JS crash хийж, editor/player
+   * бүхэлдээ "Loading, please wait..." дээр зогсдог.
+   */
+  @Get('contentUserData/:contentId/:dataType/:subContentId')
+  async getContentUserData(
+    @Param('contentId') contentId: string,
+    @Param('dataType') dataType: string,
+    @Param('subContentId') subContentId: string,
+    @Req() req: Request,
+  ) {
+    const user = new H5pUser(req.user as any);
+    const data = await this.h5p.contentUserDataManager.getContentUserData(
+      contentId,
+      dataType,
+      subContentId,
+      user,
+    );
+    return new H5P.AjaxSuccessResponse(data ?? false);
+  }
+
+  @Post('contentUserData/:contentId/:dataType/:subContentId')
+  async postContentUserData(
+    @Param('contentId') contentId: string,
+    @Param('dataType') dataType: string,
+    @Param('subContentId') subContentId: string,
+    @Body() body: Record<string, string>,
+    @Req() req: Request,
+  ) {
+    const user = new H5pUser(req.user as any);
+    await this.h5p.contentUserDataManager.createOrUpdateContentUserData(
+      contentId,
+      dataType,
+      subContentId,
+      body.data,
+      body.invalidate === '1',
+      body.preload === '1',
+      user,
+    );
+    return new H5P.AjaxSuccessResponse(true);
   }
 
   @Get('download/:contentId')
