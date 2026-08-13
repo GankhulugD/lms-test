@@ -1,6 +1,9 @@
 {
   "name": "lms-monorepo",
   "private": true,
+  "engines": {
+    "node": ">=20"
+  },
   "workspaces": [
     "apps/backend",
     "apps/frontend",

@@ -17,6 +17,8 @@ services:
         - package.json
         - package-lock.json
     envVars:
+      - key: NODE_VERSION
+        value: 22.22.3
       - key: NODE_ENV
         value: production
       - key: MONGODB_URI
@@ -26,4 +28,4 @@ services:
       - key: JWT_EXPIRES_IN
         value: 15m
       - key: CORS_ORIGIN
-        sync: false
+        value: https://lms-frontend.gankhulug12345.workers.dev
